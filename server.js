@@ -31,6 +31,7 @@ app.use(
   })
 );
 
+app.options("*", cors());
 
 
 // Expose uploads folder as static
