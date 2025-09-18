@@ -6,18 +6,16 @@ import complaintRoutes from "./routes/complaintRoutes.js";
 import cors from "cors";
 import path from "path";
 import { fileURLToPath } from "url";
+import serverless from "serverless-http"; 
 
-// Get current directory for ES modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-
 
 dotenv.config();
 connectDB();
 
 const app = express();
 app.use(express.json());
-
 
 app.use(
   cors({
@@ -33,14 +31,10 @@ app.use(
 
 app.options("*", cors());
 
-
-// Expose uploads folder as static
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
-
-// Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/complaints", complaintRoutes);
 
 app.get("/", (req, res) => res.send("JanSetu API running"));
 
-export default app;
+export const handler = serverless(app);
