@@ -17,7 +17,29 @@ connectDB();
 
 const app = express();
 app.use(express.json());
-app.use(cors());
+
+const allowedOrigins = [
+  "http://localhost:5173",            // local dev
+  "https://jansetu-frontend.vercel.app", 
+  "https://jansetu.vercel.app",
+  "https://jansetu-portal.vercel.app"
+];
+
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      // allow requests with no origin (like mobile apps, curl)
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.indexOf(origin) === -1) {
+        const msg = `CORS blocked: ${origin} not allowed`;
+        return callback(new Error(msg), false);
+      }
+      return callback(null, true);
+    },
+    credentials: true, // if using cookies / auth tokens
+  })
+);
+
 
 // Expose uploads folder as static
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
