@@ -6,10 +6,11 @@ import complaintRoutes from "./routes/complaintRoutes.js";
 import cors from "cors";
 import path from "path";
 import { fileURLToPath } from "url";
-import serverless from "serverless-http"; 
 
+// Get current directory for ES modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
 
 dotenv.config();
 connectDB();
@@ -17,24 +18,19 @@ connectDB();
 const app = express();
 app.use(express.json());
 
-app.use(
-  cors({
-    origin: [
-      "http://localhost:5173",
-      "https://jansetu-frontend.vercel.app",
-      "https://jansetu.vercel.app",
-      "https://jansetu-portal.vercel.app"
-    ],
-    credentials: true,
-  })
-);
 
-app.options("*", cors());
+app.use(cors({ origin: "https://jansetu-portal.vercel.app" }));
 
+
+
+// Expose uploads folder as static
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
+// Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/complaints", complaintRoutes);
 
 app.get("/", (req, res) => res.send("JanSetu API running"));
 
-export const handler = serverless(app);
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
